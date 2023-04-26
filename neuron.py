@@ -168,6 +168,25 @@ class Perceptron:
 
 
 def test_neural_network():
+    """
+    This is almost default hello world test case for testing
+    newly baked neural network.
+    This test simulates, how the neural network did understand
+    the logic behind XOR logic module.
+
+    The XOR logic truth table shall look like this
+    ------------------------------
+    | input 1 | input 2 | output |
+    ------------------------------
+    |    0    |    0    |    0   |
+    ------------------------------
+    |    0    |    1    |    1   |
+    ------------------------------
+    |    1    |    0    |    1   |
+    ------------------------------
+    |    1    |    1    |    0   |
+    ------------------------------
+    """
     # Define the neural network architecture
 
     # Smallest configuration for this task is: 2, 3, 2, 1. Works in ~50% Cases. Sometimes shits itself.
