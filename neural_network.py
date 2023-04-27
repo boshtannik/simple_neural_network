@@ -213,7 +213,7 @@ def test_neural_network():
 
     # Smallest configuration for this task that i found is: 2, 3, 1. And one bias,
     # connected to 2nd layer. Works in ~30% Cases. Often shits itself.
-    nn = Perceptron(layers=[2, 3, 1])
+    nn = Perceptron(layers=[2, 4, 3, 1])
     nn.add_bias(layer_number=1)
 
     # Set data for training.
