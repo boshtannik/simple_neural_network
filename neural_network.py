@@ -18,6 +18,7 @@ What else to be expected:
     * Being able to save neurons connections weights into file.
     * Restore previously trained neural network connection weights from file.
     * Run neural network predict method from command line.
+    * Support of biasses to be added into hidden layers.
 """
 
 
@@ -149,6 +150,8 @@ class Perceptron:
             neuron.error = errors.pop(0)
 
         # 3 Iterate trough layers from last to previous ones, in order to:
+        #   1 - propagate error back.
+        #   2 - adjust weights accordingly to propagated error.
         # For every income connection of neuron - call:
         #       1 back_propagate() -> Should: get error of current neuron,
         #                             multiply it by weight of connection, and add
