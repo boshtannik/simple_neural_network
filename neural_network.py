@@ -221,25 +221,25 @@ def test_neural_network():
     got_1_prediction, = nn.predict(inputs=inputs[0])
     got_1_prediction *= 100  # Convert to percents
     test_1_passed = got_1_prediction < 3  # Check if confidence in activation is less than 3%
-    print(f"Test with input data: {inputs[0]} is {'' if test_1_passed else 'not '}passed. with result: {got_1_prediction:.2f}% confidence.")
+    print(f"Test with input data: {inputs[0]} is {'' if test_1_passed else 'NOT '}passed. with result: {got_1_prediction:.2f}% confidence.")
 
     got_2_prediction, = nn.predict(inputs=inputs[1])
     got_2_prediction *= 100  # Convert to percents
     test_2_passed = got_2_prediction > 97  # Check if confidence in activation is less than 3%
-    print(f"Test with input data: {inputs[1]} is {'' if test_2_passed else 'not '}passed. with result: {got_2_prediction:.2f}% confidence.")
+    print(f"Test with input data: {inputs[1]} is {'' if test_2_passed else 'NOT '}passed. with result: {got_2_prediction:.2f}% confidence.")
 
     got_3_prediction, = nn.predict(inputs=inputs[2])
     got_3_prediction *= 100  # Convert to percents
     test_3_passed = got_3_prediction > 97  # Check if confidence in activation is less than 3%
-    print(f"Test with input data: {inputs[2]} is {'' if test_3_passed else 'not '}passed. with result: {got_3_prediction:.2f}% confidence.")
+    print(f"Test with input data: {inputs[2]} is {'' if test_3_passed else 'NOT '}passed. with result: {got_3_prediction:.2f}% confidence.")
 
     got_4_prediction, = nn.predict(inputs=inputs[3])
     got_4_prediction *= 100  # Convert to percents
     test_4_passed = got_4_prediction < 3  # Check if confidence in activation is less than 3%
-    print(f"Test with input data: {inputs[3]} is {'' if test_4_passed else 'not '}passed. with result: {got_4_prediction:.2f}% confidence.")
+    print(f"Test with input data: {inputs[3]} is {'' if test_4_passed else 'NOT '}passed. with result: {got_4_prediction:.2f}% confidence.")
 
     all_passed = all((test_1_passed, test_2_passed, test_3_passed, test_4_passed))
-    print(f"Finally. The neural network did{('' if all_passed else ' not')} pass the test", )
+    print(f"Finally. The neural network did{('' if all_passed else ' NOT')} pass the test", )
 
 
 if __name__ == '__main__':
