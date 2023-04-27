@@ -18,7 +18,7 @@ What else to be expected:
     * Being able to save neurons connections weights into file.
     * Restore previously trained neural network connection weights from file.
     * Run neural network predict method from command line.
-    * Support of biasses to be added into hidden layers.
+    * Support of biasses to be added into hidden layers. - Done!
 """
 
 
