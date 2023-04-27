@@ -98,7 +98,7 @@ class Perceptron:
 
     def add_bias(self, layer_number: int):
         """
-        Param layer_number - number of layer. Cound starts from 0
+        Param layer_number - number of layer. Count starts from 0
         """
 
         if layer_number == len(self.layers) - 1:
