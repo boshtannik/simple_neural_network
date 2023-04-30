@@ -54,10 +54,13 @@ class Connection:
         
 
 class Neuron:
-    def __init__(self):
+    def __init__(self, is_bias: bool = False):
         self.error = 0
         self.input = 0
-        self.output = 0
+        self.output = 1 if is_bias else 0
+
+        self.is_bias = is_bias
+
         self.output_connections = []
         self.input_connections = []
 
@@ -99,29 +102,35 @@ class Perceptron:
     def add_bias(self, layer_number: int):
         """
         Param layer_number - number of layer. Count starts from 0
+
+        Adds special neuron, that is in previous layer,
+        and has connections to the next layer - which it should affect to.
         """
 
         if layer_number == len(self.layers) - 1:
-            raise ValueError(f"Bias can't be added to output layer")
+            raise ValueError(f"Bias can't be added to output layer. Because there is no next layer to affect to.")
 
-        if layer_number < 1 or layer_number > len(self.layers) - 1:
-            raise ValueError(f"Number of layer should be in range between 1 and {len(self.layers) - 2}")
+        if layer_number < 0 or layer_number > len(self.layers) - 1:
+            raise ValueError(f"Number of layer should be in range between 0 and {len(self.layers) - 2}")
 
-        bias_neuron = Neuron()
-        bias_neuron.input = 1
+        bias_neuron = Neuron(is_bias=True)
 
         current_layer = self.layers[layer_number]
+        next_layer = self.layers[layer_number + 1]
 
         current_layer.append(bias_neuron)
-        for neuron in current_layer:
+
+        for neuron in next_layer:
             Connection(from_neuron=bias_neuron, to_neuron=neuron, weight=randint(-100, 100) * 0.01)
 
     def predict(self, inputs: List[float]) -> List[float]:
-        if len(inputs) != len(self.input_layer):
+        if len(inputs) != len([n for n in self.input_layer if not n.is_bias]):
             raise ValueError('Number of inputs must be equal to number of input neurons')
 
         # Set the output of the input layer to the input values
         for i in range(len(inputs)):
+            if self.input_layer[i].is_bias:
+                continue
             self.input_layer[i].output = inputs[i]
 
         # Propagate the values through the network
@@ -138,7 +147,7 @@ class Perceptron:
         return [neuron.output for neuron in self.output_layer]
 
     def get_errors(self, expected_values: List[float]) -> List[float]:
-        if len(expected_values) != len(self.output_layer):
+        if len(expected_values) != len([n for n in self.output_layer if not n.is_bias]):
             raise ValueError('Number of expected values must be equal to number of output neurons')
 
         errors = []
@@ -147,7 +156,7 @@ class Perceptron:
         return errors
     
     def train(self, inputs: List[float], expected_values: List[float], learning_rate: float):
-        if len(inputs) != len(self.input_layer):
+        if len(inputs) != len([n for n in self.input_layer if not n.is_bias]):
             raise ValueError('Number of inputs must be equal to size of input layer')
 
         if len(expected_values) != len(self.output_layer):
@@ -213,8 +222,10 @@ def test_neural_network():
 
     # Smallest configuration for this task that i found is: 2, 3, 1. And one bias,
     # connected to 2nd layer. Works in ~30% Cases. Often shits itself.
-    nn = Perceptron(layers=[2, 4, 3, 1])
+    nn = Perceptron(layers=[2, 3, 3, 1])
+    nn.add_bias(layer_number=0)
     nn.add_bias(layer_number=1)
+    nn.add_bias(layer_number=2)
 
     # Set data for training.
     inputs = [
@@ -235,7 +246,8 @@ def test_neural_network():
     train_data = list(zip(inputs, expected_values))
 
     # Train it 100000 times.
-    for _ in range(100000):
+    train_generations = 100000
+    for _ in range(train_generations):
         input, expected_val = choice(train_data)
         nn.train(input, expected_val, learning_rate=0.1)
 
