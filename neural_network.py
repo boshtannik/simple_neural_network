@@ -65,6 +65,8 @@ class Neuron:
         self.input_connections = []
 
     def activation_function(self, x):
+        if x < 0:
+            return 1 - 1 / (1 + exp(x))
         return 1 / (1 + exp(-x))
 
     def derivative_activation_function(self, x):
@@ -222,10 +224,9 @@ def test_neural_network():
 
     # Smallest configuration for this task that i found is: 2, 3, 1. And one bias,
     # connected to 2nd layer. Works in ~30% Cases. Often shits itself.
-    nn = Perceptron(layers=[2, 3, 3, 1])
+    nn = Perceptron(layers=[2, 3, 1])
     nn.add_bias(layer_number=0)
     nn.add_bias(layer_number=1)
-    nn.add_bias(layer_number=2)
 
     # Set data for training.
     inputs = [
