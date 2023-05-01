@@ -28,12 +28,12 @@ Hint:
 
 from math import exp
 import os
-import pickle
 from typing import List
 from random import randint, choice
+import json
 
 
-PERCEPTRON_SAVE_FILE = 'perceptron.bin'
+PERCEPTRON_SAVE_FILE = 'perceptron.json'
 
 
 class Connection:
@@ -97,15 +97,53 @@ class PerceptronSaver:
         self.perceptron = perceptron
 
     def save_to_file(self, filename: str):
-        with open(filename, "wb") as f:
-            pickle.dump(self.perceptron.layers, f)
+        # Get configuration of layers.
+        # Get configuration of biases.
+        # Iterate over layers -> neurons -> connections -> save connections to file.
+        layers_configuration = []
+        for layer in self.perceptron.layers:
+            layers_configuration.append( sum( 1 for n in layer if not n.is_bias ) )
+
+        biases_configuration = []
+        for layer in self.perceptron.layers:
+            biases_configuration.append( sum( 1 for n in layer if n.is_bias ) )
+
+        weights_configuration = []
+        for layer in self.perceptron.layers:
+            for neuron in layer:
+                for connection in neuron.output_connections:
+                    weights_configuration.append(connection.weight)
+
+        object_to_save = {
+            "layers_configuration": layers_configuration,
+            "biases_configuration": biases_configuration,
+            "weights_configuration": weights_configuration
+        }
+
+        with open(filename, "w") as f:
+            json.dump(object_to_save, f)
 
     def load_from_file(self, filename: str):
-        with open(filename, "rb") as f:
-            self.perceptron.layers = pickle.load(f)
+        # Load configuration of layers -> instantiate it.
+        # Load configuration of biases -> instantiate them.
+        # Iterate over existing weights, being created by NN -> set each weight, loaded from file.
+        with open(filename, "r") as f:
+            load_object = json.load(f)
 
-            self.perceptron.input_layer = self.perceptron.layers[0]
-            self.perceptron.output_layer = self.perceptron.layers[-1]
+        layers_configuration = load_object.get("layers_configuration")
+        biases_configuration = load_object.get("biases_configuration")
+        weights_configuration = load_object.get("weights_configuration")
+
+        self.perceptron.build(layers_configuration)
+
+        for layer_index, biases_count in enumerate(biases_configuration):
+            for _ in range(biases_count):
+                self.perceptron.add_bias(layer_number=layer_index)
+
+        for layer in self.perceptron.layers:
+            for neuron in layer:
+                for connection in neuron.output_connections:
+                    connection.weight = weights_configuration.pop(0)
 
 
 class Perceptron:
@@ -113,6 +151,12 @@ class Perceptron:
         """
         Param layers - is list of counts of neurons in each layer
         """
+        self.layers = []
+        self.build(layers)
+
+        self.saver = PerceptronSaver(self)
+
+    def build(self, layers: List[int]):
         self.layers = []
         for layer in layers:
             self.layers.append([Neuron() for _ in range(layer)])
@@ -125,8 +169,6 @@ class Perceptron:
         # hidden layers are all except input and output
         self.input_layer = self.layers[0]
         self.output_layer = self.layers[-1]
-
-        self.saver = PerceptronSaver(self)
 
     def save(self):
         self.saver.save_to_file(PERCEPTRON_SAVE_FILE)
