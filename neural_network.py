@@ -15,16 +15,25 @@ of the neural network architecture, i. e. mean to:
     * etc..
 
 What else to be expected:
-    * Being able to save neurons connections weights into file.
-    * Restore previously trained neural network connection weights from file.
+    * Being able to save neurons connections weights into file. - Done!
+    * Restore previously trained neural network connection weights from file. - Done!
     * Run neural network predict method from command line.
     * Support of biasses to be added into hidden layers. - Done!
+
+Hint:
+    For better perfomance - i advise to use pypy interpreter.
+    Works faster a lot!
 """
 
 
 from math import exp
+import os
+import pickle
 from typing import List
 from random import randint, choice
+
+
+PERCEPTRON_SAVE_FILE = 'perceptron.bin'
 
 
 class Connection:
@@ -83,6 +92,22 @@ class Neuron:
         return self.error * self.derivative_activation_function(self.output)
 
 
+class PerceptronSaver:
+    def __init__(self, perceptron: 'Perceptron') -> None:
+        self.perceptron = perceptron
+
+    def save_to_file(self, filename: str):
+        with open(filename, "wb") as f:
+            pickle.dump(self.perceptron.layers, f)
+
+    def load_from_file(self, filename: str):
+        with open(filename, "rb") as f:
+            self.perceptron.layers = pickle.load(f)
+
+            self.perceptron.input_layer = self.perceptron.layers[0]
+            self.perceptron.output_layer = self.perceptron.layers[-1]
+
+
 class Perceptron:
     def __init__(self, layers: List[int]):
         """
@@ -100,6 +125,14 @@ class Perceptron:
         # hidden layers are all except input and output
         self.input_layer = self.layers[0]
         self.output_layer = self.layers[-1]
+
+        self.saver = PerceptronSaver(self)
+
+    def save(self):
+        self.saver.save_to_file(PERCEPTRON_SAVE_FILE)
+
+    def load(self):
+        self.saver.load_from_file(PERCEPTRON_SAVE_FILE)
 
     def add_bias(self, layer_number: int):
         """
@@ -246,11 +279,14 @@ def test_neural_network():
     # Prepare data in order (<Data to be feed in>, <Expected data to be received>)
     train_data = list(zip(inputs, expected_values))
 
-    # Train it 100000 times.
-    train_generations = 100000
-    for _ in range(train_generations):
-        input, expected_val = choice(train_data)
-        nn.train(input, expected_val, learning_rate=0.1)
+    if os.path.exists(PERCEPTRON_SAVE_FILE):
+        nn.load()
+    else:
+        # Train it 100000 times.
+        train_generations = 100000
+        for _ in range(train_generations):
+            input, expected_val = choice(train_data)
+            nn.train(input, expected_val, learning_rate=0.1)
 
     # Test the neural network
     got_1_prediction, = nn.predict(inputs=inputs[0])
@@ -275,6 +311,9 @@ def test_neural_network():
 
     all_passed = all((test_1_passed, test_2_passed, test_3_passed, test_4_passed))
     print(f"Finally. The neural network did{('' if all_passed else ' NOT')} pass the test", )
+
+    if not os.path.exists(PERCEPTRON_SAVE_FILE) and all_passed:
+        nn.save()
 
 
 if __name__ == '__main__':
