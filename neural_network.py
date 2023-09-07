@@ -2,7 +2,7 @@
 Written by boshtannik.
 e-mail: boshtannik@gmail.com
 Inpiration got from book "Crete own neural network" by Tariq Rashid.
-The main idea was to create neural network by representing it via matricies
+The main idea of the book was to create neural network by representing it via matricies
 and their multiplication, but I decide to walk in other way, in order to
 picture the whole architecture in the object-oriented way.
 
