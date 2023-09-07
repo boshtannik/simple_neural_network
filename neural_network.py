@@ -6,7 +6,7 @@ The main idea of the book was to create neural network by representing it via ma
 and their multiplication, but I decide to walk in other way, in order to
 picture the whole architecture in the object-oriented way.
 
-The main idea was to this project - was to put basement to let further reconfiguration
+The main idea of this project - was to put basement to let further reconfiguration
 of the neural network architecture, i. e. mean to:
     * Being able to link new neurons into the existing neural network.
     * Cut their pieces like connections.
